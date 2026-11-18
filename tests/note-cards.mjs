@@ -40,7 +40,7 @@ try {
   await assert.rejects(access(`${root}dist/notes/card-test-draft/index.html`));
   assert.equal((await readdir(`${root}dist/og/notes`)).length, baselineCards.length + 2);
   assert.doesNotMatch(await readFile(`${root}dist/sitemap-0.xml`, 'utf8'), /\/og\/|\.png|card-test-draft/);
-  assert.ok((await readFile(`${root}dist/index.html`, 'utf8')).includes('content="https://ankeeth.com/social-card.png"'));
+  assert.ok((await readFile(`${root}dist/index.html`, 'utf8')).includes('content="https://ankeeth.com/social-card-home.png"'));
   // Optional preview output stays outside the source tree and never deploys.
   if (process.env.NOTE_CARD_PREVIEW_DIR) {
     await mkdir(process.env.NOTE_CARD_PREVIEW_DIR, { recursive: true });

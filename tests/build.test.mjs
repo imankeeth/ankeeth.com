@@ -41,7 +41,8 @@ test('photo favicons are linked and shipped', async () => {
 test('indexable pages include the default share image and page-specific card text', async () => {
   for (const file of ['index.html', 'notes/index.html']) {
     const html = await read(file);
-    assert.match(html, /property="og:image" content="https:\/\/ankeeth.com\/social-card.png"/);
+    const imageName = file === 'index.html' ? 'social-card-home.png' : 'social-card.png';
+    assert.ok(html.includes(`property="og:image" content="https://ankeeth.com/${imageName}"`));
     assert.match(html, /property="og:image:width" content="1200"/);
     assert.match(html, /property="og:image:height" content="630"/);
     assert.match(html, /name="twitter:card" content="summary_large_image"/);
@@ -52,4 +53,19 @@ test('indexable pages include the default share image and page-specific card tex
   const image = await readFile(new URL('../dist/social-card.png', import.meta.url));
   assert.equal(image.readUInt32BE(16), 1200);
   assert.equal(image.readUInt32BE(20), 630);
+});
+
+
+test('homepage uses approved exact metadata and CTA card without changing archive', async () => {
+  const html = await read('index.html');
+  const title = 'Ankeeth Suvarna | CTO &amp; Product Engineer at Menderly';
+  const description = 'I’m Ankeeth Suvarna, CTO and product engineer at Menderly. I build AI tools and am open to collaborating on new ideas.';
+  assert.ok(html.includes(`<title>${title}</title>`));
+  for (const tag of ['property="og:title"', 'name="twitter:title"']) assert.ok(html.includes(`${tag} content="${title}"`));
+  for (const tag of ['name="description"', 'property="og:description"', 'name="twitter:description"']) assert.ok(html.includes(`${tag} content="${description}"`));
+  assert.match(html, /property="og:image:alt" content="[^"\n]*Let’s connect/);
+  assert.ok((await read('notes/index.html')).includes('content="https://ankeeth.com/social-card.png"'));
+  const png = await readFile(new URL('../dist/social-card-home.png', import.meta.url));
+  assert.equal(png.readUInt32BE(16), 1200);
+  assert.equal(png.readUInt32BE(20), 630);
 });

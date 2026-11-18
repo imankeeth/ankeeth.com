@@ -23,7 +23,7 @@ const {
   imagePath = '/social-card.png',
   imageAlt = 'Ankeeth Suvarna. Engineer. Builder. Always learning. Portrait and ankeeth.com.',
 } = Astro.props;
-const pageTitle = title ? `${title} | Ankeeth Suvarna` : 'Ankeeth Suvarna';
+const pageTitle = title ? (home ? title : `${title} | Ankeeth Suvarna`) : 'Ankeeth Suvarna';
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const socialImage = new URL(imagePath, Astro.site);
 const socialImageAlt = imageAlt;
