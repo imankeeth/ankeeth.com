@@ -9,11 +9,12 @@
   "scripts": {
     "dev": "astro dev",
     "check": "astro check",
-    "build": "astro build",
+    "build": "astro build && node scripts/build-markdown.mjs",
     "preview": "astro preview",
     "test": "node --test tests/*.test.mjs",
     "deploy": "pnpm build && wrangler deploy",
-    "test:notes": "node tests/note-cards.mjs"
+    "test:notes": "node tests/note-cards.mjs",
+    "test:markdown": "node tests/markdown-integration.mjs"
   },
   "dependencies": {
     "@astrojs/rss": "4.0.19",
@@ -24,7 +25,9 @@
     "@astrojs/check": "0.9.12",
     "@fontsource/archivo": "^5.3.0",
     "@resvg/resvg-js": "^2.6.2",
+    "linkedom": "^0.18.15",
     "satori": "^0.63.2",
+    "turndown": "^7.2.5",
     "typescript": "5.9.3",
     "wrangler": "4.163.0"
   }

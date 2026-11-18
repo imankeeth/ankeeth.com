@@ -1,7 +1,7 @@
 # ankeeth.com
 
 Ankeeth Suvarna’s personal site. Astro builds static HTML, CSS and assets into
-`dist/`; the site needs no app server, CMS, or client-side framework.
+`dist/`; a small Worker negotiates Markdown for public pages. No CMS or client-side framework is needed.
 
 ## Production source
 
@@ -43,15 +43,17 @@ it becomes `/notes/my-first-note/`. Include alt text on meaningful images
 and use descriptive link text. Set `draft: true` to exclude an unfinished note
 from all public output, including its article URL, sitemap and feed. Draft files
 remain visible to anyone with repository access, so don’t commit sensitive content. The homepage displays the five most recent published notes; the
-archive displays them all. With Cloudflare Git builds connected, committing and
-pushing to the production branch publishes the new build.
+archive displays them all. Push a feature branch and open a pull request.
+`main` requires a PR (no separate approval required); merging the PR triggers
+the Cloudflare production build. A branch push or draft PR does not publish production.
 
 Each published note automatically gets a 1200×630 share image generated at build
 time from its title and description. No extra frontmatter or image-making step is
 needed. Long text is shortened on the card only. Drafts generate neither public
 pages nor cards. Editing the title or description changes the card URL so share
 previews can refresh; platforms may still cache the page metadata. The homepage
-and archive keep the default portrait card. Rendering tools and fonts stay in
+uses its own portrait card with “Let’s connect”; the archive retains the original
+portrait card. Rendering tools and fonts stay in
 the build environment, not the deployed static site.
 
 ## Deploy to Cloudflare Workers
@@ -61,7 +63,7 @@ the build environment, not the deployed static site.
 2. Set Node to 24 (the repository also includes `.node-version`). Use
    `pnpm build` as the build command and `pnpm exec wrangler deploy` as the deploy
    command. The checked-in Wrangler config names the Worker `ankeeth-dev` and
-   serves `dist/` as static assets. Preview branches can be enabled separately.
+   serves `dist/` as static assets plus the checked-in negotiation Worker. Preview branches can be enabled separately.
 3. Test the Worker preview, including `/notes/`, `/rss.xml`, `/sitemap-index.xml`
    and an unknown URL (HTTP 404). After the `ankeeth.com` zone is active in
    Cloudflare, add `ankeeth.com` as the Worker’s **Custom Domain**. Verify HTTPS
@@ -87,3 +89,30 @@ Test with `curl -I 'https://ankeeth.dev/notes/?ref=redirect-test'`. Expect
 `https://www.ankeeth.dev/`. Only redirect hosts that are yours.
 
 [Cloudflare redirect guide](https://developers.cloudflare.com/fundamentals/manage-domains/redirect-domain/)
+
+## Machine-readable pages
+
+`pnpm build` converts the rendered public `<main>` HTML into Markdown under
+`dist/markdown/`. Home, the Notes archive and published notes use the same content
+as their HTML pages. Drafts and noindex pages are excluded; no author steps or
+duplicated copy are required. A build-only converter preserves tables as HTML
+inside Markdown and resolves links/images against each page’s canonical URL.
+
+GET/HEAD requests explicitly preferring `text/markdown` receive Markdown; HTML
+remains the default for wildcards and equal/higher HTML quality. Responses include
+`Vary: Accept`, representation-specific ETags and `Cache-Control: no-cache` to
+require revalidation. Link headers advertise the existing sitemap index, RSS and
+the direct Markdown alternative. Static asset handling retains slash redirects
+and real 404s. The direct Markdown URLs are marked noindex to avoid duplicate
+search results. robots.txt explicitly permits search, AI input and AI training through
+`Content-Signal: search=yes, ai-input=yes, ai-train=yes`, as chosen by the owner.
+
+The Worker runs only for `/`, `/notes` and `/notes/*`, including browser HTML
+requests on those routes. Those invocations consume the account’s Workers quota;
+static assets elsewhere do not invoke it. This adds a free-tier quota dependency
+that the previous all-static site did not have. No paid Markdown feature is used.
+Review account limits before merging; this PR does not change a plan or dashboard
+setting. Local end-to-end testing uses `pnpm build` then
+`pnpm exec wrangler dev --local --port 4337`. `pnpm preview` previews static HTML
+only, not content negotiation. Run `pnpm test:markdown` for the local Worker
+integration suite; its temporary published/draft fixtures are removed afterward.
