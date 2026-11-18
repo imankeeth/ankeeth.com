@@ -26,3 +26,30 @@ test('robots, sitemap, feed, and custom 404 are generated', async () => {
   assert.match(await read('rss.xml'), /<rss\b/);
   assert.match(await read('404.html'), /content="noindex,follow"/);
 });
+
+
+test('photo favicons are linked and shipped', async () => {
+  const html = await read('index.html');
+  assert.doesNotMatch(html, /favicon\.svg/);
+  for (const name of ['favicon.ico', 'favicon-32.png', 'favicon-48.png', 'apple-touch-icon.png']) {
+    assert.ok(html.includes(`href="/${name}"`));
+    const bytes = await readFile(new URL(`../dist/${name}`, import.meta.url));
+    assert.ok(bytes.length > 100);
+  }
+});
+
+test('indexable pages include the default share image and page-specific card text', async () => {
+  for (const file of ['index.html', 'notes/index.html']) {
+    const html = await read(file);
+    assert.match(html, /property="og:image" content="https:\/\/ankeeth.com\/social-card.png"/);
+    assert.match(html, /property="og:image:width" content="1200"/);
+    assert.match(html, /property="og:image:height" content="630"/);
+    assert.match(html, /name="twitter:card" content="summary_large_image"/);
+    const pageTitle = html.match(/<title>(.*?)<\/title>/)[1];
+    assert.ok(html.includes(`name="twitter:title" content="${pageTitle}"`));
+  }
+  assert.doesNotMatch(await read('404.html'), /property="og:image"/);
+  const image = await readFile(new URL('../dist/social-card.png', import.meta.url));
+  assert.equal(image.readUInt32BE(16), 1200);
+  assert.equal(image.readUInt32BE(20), 630);
+});
