@@ -116,3 +116,21 @@ setting. Local end-to-end testing uses `pnpm build` then
 `pnpm exec wrangler dev --local --port 4337`. `pnpm preview` previews static HTML
 only, not content negotiation. Run `pnpm test:markdown` for the local Worker
 integration suite; its temporary published/draft fixtures are removed afterward.
+
+## Public read-only API and reading skill
+
+`/api/notes.json` is generated from the same published-note collection as the
+HTML archive and RSS. It returns version 1 and every published note's title,
+description, publication date, ID, canonical URL and Markdown URL, or an empty
+array. No draft body or metadata is exported. `/api/openapi.json` describes the
+GET/HEAD contract; `/api/README.md` explains use and ordering.
+
+`/.well-known/api-catalog` is an RFC 9727 Linkset advertising that real API and
+its documentation. `/.well-known/agent-skills/index.json` discovers the scriptless
+`read-ankeeth-portfolio` skill. Its digest is calculated from the exact deployed
+SKILL.md bytes at build time. The skill describes reading relevant public notes
+and citing canonical sources; it cannot write, authenticate or act for anyone.
+All new resources are static assets, served outside the existing Worker routes.
+No extra runtime, dependency, credential, private data or dashboard change is
+needed. The existing local integration test verifies their MIME types, GET/HEAD,
+published-only index, exact digest and well-known paths using Wrangler.

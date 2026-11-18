@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { writeFile, rm, readFile } from 'node:fs/promises';
 import { spawn, execFileSync } from 'node:child_process';
 const published = 'src/content/notes/agent-readability-test.md';
@@ -55,9 +56,38 @@ try {
   assert.equal(direct.headers.get('x-robots-tag'), 'noindex');
   const routes = JSON.parse(await readFile('.generated/markdown-routes.json', 'utf8'));
   assert.deepEqual(Object.keys(routes).sort(), ['/', '/notes/', '/notes/agent-readability-test/']);
+  const api = await (await request('/api/notes.json')).json();
+  assert.equal(api.version, 1);
+  assert.equal(api.notes.length, 1);
+  assert.equal(api.notes[0].id, 'agent-readability-test');
+  assert.equal(api.notes[0].url, 'https://ankeeth.com/notes/agent-readability-test/');
+  assert.equal(api.notes[0].markdownUrl, 'https://ankeeth.com/markdown/notes/agent-readability-test/index.md');
+  for (const [path, mime] of [
+    ['/.well-known/api-catalog', 'application/linkset+json'],
+    ['/api/openapi.json', 'application/vnd.oai.openapi+json'],
+    ['/.well-known/agent-skills/index.json', 'application/json'],
+    ['/.well-known/agent-skills/read-ankeeth-portfolio/SKILL.md', 'text/markdown'],
+    ['/api/README.md', 'text/markdown'],
+  ]) {
+    const result = await request(path);
+    assert.equal(result.status, 200, path);
+    assert.ok(result.headers.get('content-type').startsWith(mime), path);
+    assert.equal((await request(path, '*/*', { method: 'HEAD' })).status, 200, path);
+  }
+  const catalog = await (await request('/.well-known/api-catalog')).json();
+  assert.equal(catalog.linkset[0].item[0].href, 'https://ankeeth.com/api/notes.json');
+  assert.match((await request('/.well-known/api-catalog', '*/*', { method: 'HEAD' })).headers.get('link'), /rel="api-catalog"/);
+  const discovery = await (await request('/.well-known/agent-skills/index.json')).json();
+  const artifact = await (await request('/.well-known/agent-skills/read-ankeeth-portfolio/SKILL.md')).text();
+  assert.equal(discovery.skills[0].digest, 'sha256:' + createHash('sha256').update(artifact).digest('hex'));
+  assert.equal(discovery.skills[0].type, 'skill-md');
+  assert.ok(!JSON.stringify(api).includes('DRAFT_SENTINEL'));
+  console.log('Static API/catalog/skill HTTP checks passed, including dot-directory routes and digest.');
   console.log('Wrangler integration passed: public/draft routes, Markdown, HTML q-values, HEAD, ETags, redirects, assets and 404s.');
 } finally {
   server?.kill('SIGTERM');
   for (const file of created) await rm(file, { force: true });
   build();
+  const empty = JSON.parse(await readFile('dist/api/notes.json', 'utf8'));
+  assert.deepEqual(empty, { version: 1, notes: [] });
 }

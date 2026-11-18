@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "astro dev",
     "check": "astro check",
-    "build": "astro build && node scripts/build-markdown.mjs",
+    "build": "astro build && node scripts/build-markdown.mjs && node scripts/build-skill-index.mjs",
     "preview": "astro preview",
     "test": "node --test tests/*.test.mjs",
     "deploy": "pnpm build && wrangler deploy",
