@@ -3,6 +3,12 @@
 Ankeeth Suvarna’s personal site. Astro builds static HTML, CSS and assets into
 `dist/`; the site needs no app server, CMS, or client-side framework.
 
+## Production source
+
+Cloudflare builds production from `main` in `imankeeth/ankeeth.com`. The legacy
+`.com` portfolio is preserved on `master`. The old `imankeeth/ankeeth.dev`
+repository remains untouched and is no longer a deployment source.
+
 ## Run locally
 
 Use Node 24 (see `.node-version`) and pnpm 11 (see `package.json`).
@@ -36,8 +42,7 @@ Use a lowercase, hyphen-separated filename and keep it stable after publishing:
 it becomes `/notes/my-first-note/`. Include alt text on meaningful images
 and use descriptive link text. Set `draft: true` to exclude an unfinished note
 from all public output, including its article URL, sitemap and feed. Draft files
-committed to this public repository are still visible in GitHub, so don't commit
-private content. The homepage displays the five most recent published notes; the
+remain visible to anyone with repository access, so don’t commit sensitive content. The homepage displays the five most recent published notes; the
 archive displays them all. With Cloudflare Git builds connected, committing and
 pushing to the production branch publishes the new build.
 
