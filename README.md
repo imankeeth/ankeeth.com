@@ -46,6 +46,14 @@ remain visible to anyone with repository access, so don’t commit sensitive con
 archive displays them all. With Cloudflare Git builds connected, committing and
 pushing to the production branch publishes the new build.
 
+Each published note automatically gets a 1200×630 share image generated at build
+time from its title and description. No extra frontmatter or image-making step is
+needed. Long text is shortened on the card only. Drafts generate neither public
+pages nor cards. Editing the title or description changes the card URL so share
+previews can refresh; platforms may still cache the page metadata. The homepage
+and archive keep the default portrait card. Rendering tools and fonts stay in
+the build environment, not the deployed static site.
+
 ## Deploy to Cloudflare Workers
 
 1. In **Workers & Pages**, import this GitHub repository into a Worker. Set

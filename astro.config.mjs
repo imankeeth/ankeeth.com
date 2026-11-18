@@ -6,5 +6,5 @@ export default defineConfig({
   output: 'static',
   trailingSlash: 'always',
   devToolbar: { enabled: false },
-  integrations: [sitemap({ filter: (url) => !new URL(url).pathname.startsWith('/posts/') })],
+  integrations: [sitemap({ filter: (url) => !['/posts/', '/og/'].some((prefix) => new URL(url).pathname.startsWith(prefix)) })],
 });

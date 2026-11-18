@@ -1,6 +1,7 @@
 ---
 import { render } from 'astro:content';
 import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
+import { noteCardPath } from '../../lib/note-card';
 import Site from '../../layouts/Site.astro';
 import { formatDate, getNotes } from '../../lib/notes';
 
@@ -13,7 +14,7 @@ const { note } = Astro.props;
 const { title, description, publishedOn } = note.data;
 const { Content } = await render(note);
 ---
-<Site {title} {description} {publishedOn}>
+<Site {title} {description} {publishedOn} imagePath={noteCardPath(note.data)} imageAlt={`${title} — a note by Ankeeth Suvarna`}>
   <article class="reading-page note-page" aria-labelledby="page-title">
     <a href="/notes/"><span aria-hidden="true">←</span> All notes</a>
     <h1 id="page-title">{title}</h1>
