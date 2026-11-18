@@ -1,0 +1,60 @@
+---
+import profile from '../assets/ankeeth-profile.webp';
+import '../styles/site.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  home?: boolean;
+  notes?: boolean;
+  noindex?: boolean;
+  publishedOn?: string;
+}
+
+const {
+  title,
+  description = 'Ankeeth Suvarna builds software systems and tools for AI agents.',
+  home = false,
+  notes = false,
+  noindex = false,
+  publishedOn,
+} = Astro.props;
+const pageTitle = title ? `${title} | Ankeeth Suvarna` : 'Ankeeth Suvarna';
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    {noindex ? <meta name="robots" content="noindex,follow" /> : <link rel="canonical" href={canonical} />}
+    <meta property="og:type" content={publishedOn ? 'article' : 'website'} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:site_name" content="Ankeeth Suvarna" />
+    {!noindex && <meta property="og:url" content={canonical} />}
+    {publishedOn && <meta property="article:published_time" content={publishedOn} />}
+    <meta name="theme-color" content="#eeecea" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate" href="/rss.xml" type="application/rss+xml" title="Notes by Ankeeth Suvarna" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <div class="layout">
+      <header class="site-header">
+        <a class="name" href="/" aria-current={home ? 'page' : undefined}>
+          <img class="name-photo" src={profile.src} width="36" height="36" alt="" />
+          Ankeeth Suvarna
+        </a>
+        <nav aria-label="Main navigation">
+          <a href={home ? '#work' : '/#work'}>Work</a>
+          <a href={home ? '#notes' : '/notes/'} aria-current={notes ? 'page' : undefined}>Notes</a>
+          <a href={home ? '#contact' : '/#contact'}>Contact</a>
+        </nav>
+      </header>
+      <main id="main" tabindex="-1"><slot /></main>
+    </div>
+  </body>
+</html>
