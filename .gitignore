@@ -27,3 +27,5 @@ pnpm-debug.log*
 # cloudflare
 .wrangler/
 ref/
+# build-time Markdown route manifest
+.generated/
