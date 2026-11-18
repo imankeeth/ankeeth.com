@@ -1,0 +1,92 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Ankeeth Suvarna public notes",
+    "version": "1.0.0",
+    "description": "Read-only build-time metadata for published notes. No authentication, filtering or pagination. An empty notes array is valid."
+  },
+  "servers": [
+    {
+      "url": "https://ankeeth.com"
+    }
+  ],
+  "security": [],
+  "paths": {
+    "/api/notes.json": {
+      "get": {
+        "operationId": "listPublishedNotes",
+        "summary": "List all published notes, newest first",
+        "responses": {
+          "200": {
+            "description": "Published metadata snapshot, including an empty array when no notes exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "version",
+                    "notes"
+                  ],
+                  "properties": {
+                    "version": {
+                      "type": "integer",
+                      "const": 1
+                    },
+                    "notes": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "id",
+                          "title",
+                          "description",
+                          "publishedOn",
+                          "url",
+                          "markdownUrl"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "publishedOn": {
+                            "type": "string",
+                            "format": "date"
+                          },
+                          "url": {
+                            "type": "string",
+                            "format": "uri"
+                          },
+                          "markdownUrl": {
+                            "type": "string",
+                            "format": "uri"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "head": {
+        "operationId": "headPublishedNotes",
+        "summary": "Read response headers without a body",
+        "responses": {
+          "200": {
+            "description": "Same headers as GET with no response body"
+          }
+        }
+      }
+    }
+  }
+}

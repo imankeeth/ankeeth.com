@@ -1,0 +1,28 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://ankeeth.com/.well-known/api-catalog",
+      "item": [
+        {
+          "href": "https://ankeeth.com/api/notes.json",
+          "type": "application/json"
+        }
+      ]
+    },
+    {
+      "anchor": "https://ankeeth.com/api/notes.json",
+      "service-desc": [
+        {
+          "href": "https://ankeeth.com/api/openapi.json",
+          "type": "application/vnd.oai.openapi+json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://ankeeth.com/api/README.md",
+          "type": "text/markdown"
+        }
+      ]
+    }
+  ]
+}
