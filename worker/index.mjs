@@ -24,7 +24,7 @@ export default {
     resultHeaders.delete('X-Robots-Tag');
     resultHeaders.set('Vary', [...new Set((resultHeaders.get('Vary') ?? '').split(',').map((value) => value.trim()).filter(Boolean).concat('Accept'))].join(', '));
     resultHeaders.set('Cache-Control', 'no-cache');
-    resultHeaders.set('Link', `<https://ankeeth.com/.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json", <https://ankeeth.com/sitemap-index.xml>; rel="sitemap"; type="application/xml", <https://ankeeth.com/rss.xml>; rel="alternate"; type="application/rss+xml", <https://ankeeth.com${alternate}>; rel="alternate"; type="text/markdown"`);
+    resultHeaders.set('Link', `<https://ankeeth.com/.well-known/ard.json>; rel="ard"; type="application/json", <https://ankeeth.com/.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json", <https://ankeeth.com/sitemap-index.xml>; rel="sitemap"; type="application/xml", <https://ankeeth.com/rss.xml>; rel="alternate"; type="application/rss+xml", <https://ankeeth.com${alternate}>; rel="alternate"; type="text/markdown"`);
     const etag = resultHeaders.get('ETag');
     const matches = request.headers.get('If-None-Match')?.split(',').map((tag) => tag.trim().replace(/^W\//, ''));
     if (etag && (matches?.includes(etag.replace(/^W\//, '')) || matches?.includes('*'))) {

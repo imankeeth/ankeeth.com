@@ -64,6 +64,8 @@ try {
   assert.equal(api.notes[0].markdownUrl, 'https://ankeeth.com/markdown/notes/agent-readability-test/index.md');
   for (const [path, mime] of [
     ['/.well-known/api-catalog', 'application/linkset+json'],
+    ['/.well-known/ard.json', 'application/json'],
+    ['/.well-known/ai-catalog.json', 'application/json'],
     ['/api/openapi.json', 'application/vnd.oai.openapi+json'],
     ['/.well-known/agent-skills/index.json', 'application/json'],
     ['/.well-known/agent-skills/read-ankeeth-portfolio/SKILL.md', 'text/markdown'],
@@ -73,6 +75,15 @@ try {
     assert.equal(result.status, 200, path);
     assert.ok(result.headers.get('content-type').startsWith(mime), path);
     assert.equal((await request(path, '*/*', { method: 'HEAD' })).status, 200, path);
+  }
+  const ard = await (await request('/.well-known/ard.json')).text();
+  assert.equal(ard, await (await request('/.well-known/ai-catalog.json')).text());
+  for (const entry of JSON.parse(ard).entries) {
+    assert.ok(entry.identifier.startsWith('urn:air:ankeeth.com:'));
+    assert.ok(entry.representativeQueries.length >= 2);
+    const resource = await request(new URL(entry.url).pathname);
+    assert.equal(resource.status, 200);
+    assert.ok(resource.headers.get('content-type').startsWith(entry.type));
   }
   const catalog = await (await request('/.well-known/api-catalog')).json();
   assert.equal(catalog.linkset[0].item[0].href, 'https://ankeeth.com/api/notes.json');

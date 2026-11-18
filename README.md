@@ -134,3 +134,9 @@ All new resources are static assets, served outside the existing Worker routes.
 No extra runtime, dependency, credential, private data or dashboard change is
 needed. The existing local integration test verifies their MIME types, GET/HEAD,
 published-only index, exact digest and well-known paths using Wrangler.
+
+The static ARD manifest at `/.well-known/ard.json` advertises only those two
+real resources, with representative reading queries. The predecessor
+`/.well-known/ai-catalog.json` is generated as an identical compatibility alias.
+ARD is an evolving proposal, not a claim that this site hosts an agent registry,
+MCP server or verified trust identity.

@@ -1,0 +1,28 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "Ankeeth Suvarna"
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:ankeeth.com:skills:read-notes",
+      "displayName": "Read Ankeeth’s public notes",
+      "type": "text/markdown",
+      "url": "https://ankeeth.com/.well-known/agent-skills/read-ankeeth-portfolio/SKILL.md",
+      "representativeQueries": [
+        "Find Ankeeth’s published notes",
+        "Read a note and cite its canonical page"
+      ]
+    },
+    {
+      "identifier": "urn:air:ankeeth.com:api:notes",
+      "displayName": "Public notes index",
+      "type": "application/json",
+      "url": "https://ankeeth.com/api/notes.json",
+      "representativeQueries": [
+        "List Ankeeth’s published note titles and dates",
+        "Find canonical and Markdown URLs for Ankeeth’s notes"
+      ]
+    }
+  ]
+}
