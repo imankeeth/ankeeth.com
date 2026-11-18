@@ -104,7 +104,8 @@ remains the default for wildcards and equal/higher HTML quality. Responses inclu
 require revalidation. Link headers advertise the existing sitemap index, RSS and
 the direct Markdown alternative. Static asset handling retains slash redirects
 and real 404s. The direct Markdown URLs are marked noindex to avoid duplicate
-search results. robots.txt and AI usage preferences are unchanged.
+search results. robots.txt explicitly permits search, AI input and AI training through
+`Content-Signal: search=yes, ai-input=yes, ai-train=yes`, as chosen by the owner.
 
 The Worker runs only for `/`, `/notes` and `/notes/*`, including browser HTML
 requests on those routes. Those invocations consume the account’s Workers quota;
