@@ -1,0 +1,23 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { formatDate, notePath } from '../lib/notes';
+
+interface Props {
+  items: CollectionEntry<'notes'>[];
+}
+
+const { items } = Astro.props;
+---
+{items.length === 0 ? (
+  <p>No notes yet. I’ll be sharing what I’m building and learning here soon.</p>
+) : (
+  <ul class="notes-links" role="list">
+    {items.map(({ id, data }) => (
+      <li>
+        <time datetime={data.publishedOn}>{formatDate(data.publishedOn)}</time>
+        <span class="note-separator" aria-hidden="true"> - </span>
+        <a href={notePath(id)}>{data.title}</a>
+      </li>
+    ))}
+  </ul>
+)}

@@ -1,43 +1,76 @@
-# Astro Starter Kit: Minimal
+# ankeeth.com
+
+Ankeeth Suvarna’s personal site. Astro builds static HTML, CSS and assets into
+`dist/`; the site needs no app server, CMS, or client-side framework.
+
+## Run locally
+
+Use Node 24 (see `.node-version`) and pnpm 11 (see `package.json`).
 
 ```sh
-pnpm create astro@latest -- --template minimal
+pnpm install --frozen-lockfile
+pnpm check
+pnpm build
+pnpm test
+pnpm preview
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Use `pnpm dev` while editing. The old site’s content is still in Git history
+(`59ad7ea`); it’s not included in this build.
 
-## 🚀 Project Structure
+## Publish a note
 
-Inside of your Astro project, you'll see the following folders and files:
+Create `src/content/notes/my-first-note.md`:
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+```markdown
+---
+title: My first note
+description: A short, specific summary for search and feed readers.
+publishedOn: '2026-11-18'
+---
+
+Start writing here. Use level-two headings (`##`) within the note.
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+Use a lowercase, hyphen-separated filename and keep it stable after publishing:
+it becomes `/notes/my-first-note/`. Include alt text on meaningful images
+and use descriptive link text. Set `draft: true` to exclude an unfinished note
+from all public output, including its article URL, sitemap and feed. Draft files
+committed to this public repository are still visible in GitHub, so don't commit
+private content. The homepage displays the five most recent published notes; the
+archive displays them all. With Cloudflare Git builds connected, committing and
+pushing to the production branch publishes the new build.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## Deploy to Cloudflare Workers
 
-Any static assets, like images, can be placed in the `public/` directory.
+1. In **Workers & Pages**, import this GitHub repository into a Worker. Set
+   the production branch to `main` and the root to the repository root.
+2. Set Node to 24 (the repository also includes `.node-version`). Use
+   `pnpm build` as the build command and `pnpm exec wrangler deploy` as the deploy
+   command. The checked-in Wrangler config names the Worker `ankeeth-dev` and
+   serves `dist/` as static assets. Preview branches can be enabled separately.
+3. Test the Worker preview, including `/notes/`, `/rss.xml`, `/sitemap-index.xml`
+   and an unknown URL (HTTP 404). After the `ankeeth.com` zone is active in
+   Cloudflare, add `ankeeth.com` as the Worker’s **Custom Domain**. Verify HTTPS
+   on the custom domain before switching the old domain. If migrating DNS, copy
+   any existing mail and verification records before changing nameservers.
 
-## 🧞 Commands
+[Astro on Cloudflare](https://docs.astro.build/en/guides/deploy/cloudflare/) ·
+[Workers Custom Domains](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/)
 
-All commands are run from the root of the project, from a terminal:
+## Redirect ankeeth.dev
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
+In the **ankeeth.dev** Cloudflare zone, after the new HTTPS site is working, make
+sure `@` and `www` have proxied DNS records. If they're redirect-only and have
+no origin, Cloudflare documents a proxied A record with address `192.0.2.1`.
+Keep unrelated records such as MX and TXT. Create a **Single Redirect**:
 
-## 👀 Want to learn more?
+- Match: `(http.host eq "ankeeth.dev") or (http.host eq "www.ankeeth.dev")`
+- Dynamic target: `concat("https://ankeeth.com", http.request.uri.path)`
+- Status: **301**; **Preserve query string**: enabled.
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Test with `curl -I 'https://ankeeth.dev/notes/?ref=redirect-test'`. Expect
+`Location: https://ankeeth.com/notes/?ref=redirect-test`. Also check
+`https://www.ankeeth.dev/`. Only redirect hosts that are yours.
+
+[Cloudflare redirect guide](https://developers.cloudflare.com/fundamentals/manage-domains/redirect-domain/)

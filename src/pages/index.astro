@@ -1,8 +1,41 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import Dashboard from "../components/react/Dashboard";
----
+import Site from '../layouts/Site.astro';
+import NotesList from '../components/NotesList.astro';
+import { getNotes } from '../lib/notes';
 
-<Layout title="ankeeth.dev | Building Intelligent Systems">
-  <Dashboard client:only="react" />
-</Layout>
+const notes = await getNotes();
+---
+<Site home>
+  <section class="hero" aria-labelledby="intro">
+    <h1 id="intro">Engineer. Builder.<br />{' '}Always learning.</h1>
+    <div class="split">
+      <div><h2>At the keyboard</h2><p>AI agents and software systems.</p></div>
+      <div><h2>Off the keyboard</h2><p>MMA and jiu-jitsu.</p></div>
+    </div>
+    <a class="hello" href="mailto:ankeeth@theaileverage.com">Say hello</a>
+  </section>
+  <section class="detail" id="work" aria-labelledby="work-title" tabindex="-1">
+    <h2 id="work-title">Work</h2>
+    <p>Most of my attention right now goes to <a href="https://menderly.co">Menderly</a>. I also run <a href="https://theaileverage.com">AI Leverage</a> and <a href="https://bizopsy.theaileverage.com">BizOpsy</a>.</p>
+    <p>I work on software systems and tools for AI agents, with a background in backend engineering and real-time infrastructure.</p>
+    <p><a href="https://github.com/theaileverage/marionette">Marionette</a> is one example of the agent orchestration work I've explored.</p>
+    <p><a href="https://github.com/theaileverage/jevscript">Jevscript</a> is a small language for writing AI agent control loops. It lets the program set the rules and replay decisions without calling the model again.</p>
+  </section>
+  <section class="detail" id="notes" aria-labelledby="notes-title" tabindex="-1">
+    <h2 id="notes-title">Notes</h2>
+    <NotesList items={notes.slice(0, 5)} />
+    {notes.length > 0 && (
+      <a class="all-notes" href="/notes/">View all notes <span aria-hidden="true">→</span></a>
+    )}
+  </section>
+  <section class="detail" id="contact" aria-labelledby="contact-title" tabindex="-1">
+    <h2 id="contact-title">Contact</h2>
+    <p>Want to talk through an idea, get help building it, or work on something together? I’d love to hear from you.</p>
+    <ul class="contact-links" role="list">
+      <li><a href="mailto:ankeeth@theaileverage.com">Email</a></li>
+      <li><a href="https://github.com/imankeeth">GitHub</a></li>
+      <li><a href="https://x.com/imankeeth">X</a></li>
+      <li><a href="https://in.linkedin.com/in/ankeethysuvarna">LinkedIn</a></li>
+    </ul>
+  </section>
+</Site>
